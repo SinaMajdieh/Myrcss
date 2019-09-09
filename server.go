@@ -2,9 +2,12 @@ package rcss
 
 import (
 	"fmt"
-	"log"
 	"net"
 	"strconv"
+	"strings"
+
+	"github.com/chewxy/chexySexp"
+	"github.com/nsf/sexp"
 )
 
 type Server interface {
@@ -17,6 +20,10 @@ type server struct {
 	raddr *net.UDPAddr
 	conn  net.PacketConn
 }
+
+// type Init struct {
+// 	init []string `sexp:"init,siblings"`
+// }
 
 func NewServer(addr string) (Server, error) {
 	if raddr, err := net.ResolveUDPAddr("udp", addr); err != nil {
@@ -39,60 +46,98 @@ func (s server) Stop() error {
 
 func (s server) bind(team Team) {
 	l := make([]byte, 4096)
-
+	var str string
+	var ast *sexp.Node
 	for {
 		if _, _, err := s.conn.ReadFrom(l); err != nil {
 			fmt.Printf("error: %s\n", err)
 			return
 		} else {
-			var msg Message
-			if err := msg.UnmarshalBinary(l); err != nil {
-				fmt.Printf("message parse error: %s\n", err)
-				continue
+			str = string(l[:])
+			ast, err := sexp.Parse(strings.NewReader(str), nil)
+			if nil != err {
+				fmt.Printf("error on : %s\n", err)
 			}
+			// var msg Message
+			// if err := msg.UnmarshalBinary(l); err != nil {
+			// 	fmt.Printf("message parse error: %s\n", err)
+			// 	continue
+			// }
 
 			//fmt.Printf("%#v\n", msg)
+			Sexp, err := chewxySexp.ParseString(str)
+			if nil != err {
+				fmt.Printf("Error : %s\n", err)
+			}
 
-			switch msg.name {
+			switch fmt.Sprint(Sexp[0].Head()) {
 			case "init":
+				fmt.Println(fmt.Sprint(Sexp[0].Head()))
 				var m Init
-				if err := m.UnmarshalRcss(msg); err != nil {
-					log.Printf("error on unmarshal Init message: %s\n", err)
+				// if err := m.UnmarshalRcss(msg); err != nil {
+				// 	log.Printf("error on unmarshal Init message: %s\n", err)
 
-					continue
+				// 	continue
+				// }
+
+				//go team.Init(s, m.Side, m.UniformNumber, m.PlayMode)
+				err := ast.Unmarshal(&m.Init)
+				if nil != err {
+					panic(err)
+				} else {
+					m.SetValues()
 				}
-
-				go team.Init(s, m.Side, m.UniformNumber, m.PlayMode)
 
 			case "server_param":
+				fmt.Println(fmt.Sprint(Sexp[0].Head()))
 				var m ServerParameters
-				if err := m.UnmarshalRcss(msg); err != nil {
-					log.Printf("error on unmarshal ServerParameters message: %s\n", err)
+				// if err := m.UnmarshalRcss(msg); err != nil {
+				// 	log.Printf("error on unmarshal ServerParameters message: %s\n", err)
 
-					continue
+				// 	continue
+				// }
+
+				// go team.ServerParam(m)
+				err := ast.Unmarshal(&m.ServerParameters)
+				if nil != err {
+					panic(err)
+				} else {
+					fmt.Println("vals")
+					m.SetValues()
 				}
-
-				go team.ServerParam(m)
-
 			case "player_param":
+				fmt.Println(fmt.Sprint(Sexp[0].Head()))
 				var m PlayerParameters
-				if err := m.UnmarshalRcss(msg); err != nil {
-					log.Printf("error on unmarshal PlayerParameters message: %s\n", err)
+				// if err := m.UnmarshalRcss(msg); err != nil {
+				// 	log.Printf("error on unmarshal PlayerParameters message: %s\n", err)
 
-					continue
+				// 	continue
+				// }
+
+				// go team.PlayerParam(m)
+				err := ast.Unmarshal(&m.PlayerParameters)
+				if nil != err {
+					panic(err)
+				} else {
+					m.SetValues()
 				}
-
-				go team.PlayerParam(m)
 
 			case "player_type":
+				fmt.Println(fmt.Sprint(Sexp[0].Head()))
 				var m PlayerType
-				if err := m.UnmarshalRcss(msg); err != nil {
-					log.Printf("error on unmarshal PlayerType message: %s\n", err)
+				// if err := m.UnmarshalRcss(msg); err != nil {
+				// 	log.Printf("error on unmarshal PlayerType message: %s\n", err)
 
-					continue
+				// 	continue
+				// }
+
+				// go team.PlayerType(m)
+				err := ast.Unmarshal(&m.PlayerType)
+				if nil != err {
+					panic(err)
+				} else {
+					m.SetValues()
 				}
-
-				go team.PlayerType(m)
 
 			case "see":
 
@@ -105,10 +150,12 @@ func (s server) bind(team Team) {
 			case "error":
 
 			default:
-				fmt.Printf("unhandled server input: `%s`\n", msg.name)
+				//fmt.Printf("unhandled server input: `%s`\n", fmt.Sprint(Sexp[0]))
 			}
 		}
 	}
+	//Should be ommited , I just put it to get rid og "ast declered and not used" error!
+	ast.Unmarshal()
 }
 
 func newInitCommand(teamName string, goalie bool, version int) Message {

@@ -2,6 +2,7 @@ package rcss
 
 import (
 	"fmt"
+	"strconv"
 )
 
 type Side rune
@@ -51,11 +52,30 @@ const (
 	FoulBallOutRight          PlayMode = "foul_ball_out_right"
 	Max                       PlayMode = "max"
 )
+const (
+	InitSideIndex          = 0
+	InitUniformNumberindex = 1
+	InitPlayMode           = 2
+)
 
 type Init struct {
+	Init struct {
+		Array []string `sexp:"init,siblings"`
+	}
 	Side          Side
 	UniformNumber UniformNumber
 	PlayMode      PlayMode
+}
+
+//Set Values Of init Command
+func (init *Init) SetValues() {
+	fmt.Println(len(init.Init.Array))
+	init.Side = Side((init.Init.Array[InitSideIndex])[0])
+	x, _ := strconv.ParseUint(init.Init.Array[InitUniformNumberindex], 10, 8)
+	init.UniformNumber = UniformNumber(x)
+
+	init.PlayMode = PlayMode(init.Init.Array[InitPlayMode])
+	fmt.Println("ok")
 }
 
 func (m Init) adapter() *buffer {
@@ -79,6 +99,9 @@ func (m *Init) MarshalRcss() (Message, error) {
 
 // Aggregate of 109 Server Parameters
 type ServerParameters struct {
+	ServerParameters struct {
+		Array []string `sexp:"server_para,siblings"`
+	}
 	// Goal width
 	// name: goal_width
 	GoalWidth float32
@@ -517,6 +540,11 @@ type ServerParameters struct {
 	RightFullState string
 }
 
+func (s *ServerParameters) SetValues() {
+	// x, _ := strconv.ParseFloat(s.ServerParameters.Array[0], 64)
+	// s.GoalWidth = float32(x)
+	fmt.Println(len(s.ServerParameters.Array))
+}
 func (m ServerParameters) adapter() *buffer {
 	var temp string
 
@@ -656,6 +684,9 @@ func (m *ServerParameters) MarshalRcss() (Message, error) {
 }
 
 type PlayerParameters struct {
+	PlayerParameters struct {
+		Array []string `sexp:"player_para,siblings"`
+	}
 	PlayerTypes int
 
 	SubsMax int
@@ -706,6 +737,9 @@ type PlayerParameters struct {
 	SpareShort10 int
 }
 
+func (p *PlayerParameters) SetValues() {
+
+}
 func (m PlayerParameters) adapter() *buffer {
 	return &buffer{
 		name: "player_param",
@@ -743,6 +777,9 @@ func (m *PlayerParameters) MarshalRcss() (Message, error) {
 }
 
 type PlayerType struct {
+	PlayerType struct {
+		array []string `sexp:"player_type,siblings"`
+	}
 	// Player Identifier
 	Id int
 
@@ -791,6 +828,9 @@ type PlayerType struct {
 	SpareLong10 int
 }
 
+func (p *PlayerType) SetValues() {
+
+}
 func (m *PlayerType) adapter(msg Message) *buffer {
 	if _, err := fmt.Sscan(msg.values[0], &m.Id); err != nil {
 		return &buffer{}
