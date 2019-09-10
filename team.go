@@ -772,55 +772,52 @@ func (m *PlayerParameters) MarshalRcss() (Message, error) {
 }
 
 type PlayerType struct {
-	PlayerType struct {
-		array []string `sexp:"player_type,siblings"`
-	}
 	// Player Identifier
-	Id int
+	Id int `sexp:"id"`
 
 	// Maximum Player Speed
-	PlayerSpeedMax int
+	PlayerSpeedMax int `sexp:"player_speed_max"`
 
 	// Maximum Stamina Increase
-	StaminaIncMax int
+	StaminaIncMax int `sexp:"stamina_inc_max"`
 
 	// Player Decay
-	PlayerDecay int
+	PlayerDecay int `sexp:"player_decay"`
 
 	// Inertia Moment
-	InertiaMoment int
+	InertiaMoment int `sexp:"inertia_moment"`
 
 	// Dash Power Rate
-	DashPowerRate int
+	DashPowerRate int `sexp:"dash_power_rate"`
 
 	// Player Size
-	PlayerSize int
+	PlayerSize int `sexp:"player_size"`
 
 	// Kickable Margin
-	KickableMargin int
+	KickableMargin int `sexp:"kickable_margin"`
 
 	// Kick Rand
-	KickRand int
+	KickRand int `sexp:"kick_rand"`
 
 	// Extra Stamina
-	ExtraStamina int
+	ExtraStamina int `sexp:"extra_stamina"`
 
 	// Maximum Effort
-	EffortMax int
+	EffortMax int `sexp:"effort_max"`
 
 	// Minimum Effort
-	EffortMin int
+	EffortMin int `sexp:"effort_min"`
 
-	SpareLong1  int
-	SpareLong2  int
-	SpareLong3  int
-	SpareLong4  int
-	SpareLong5  int
-	SpareLong6  int
-	SpareLong7  int
-	SpareLong8  int
-	SpareLong9  int
-	SpareLong10 int
+	SpareLong1  int `sexp:"sparelong1"`
+	SpareLong2  int `sexp:"sparelong2"`
+	SpareLong3  int `sexp:"sparelong3"`
+	SpareLong4  int `sexp:"sparelong4"`
+	SpareLong5  int `sexp:"sparelong5"`
+	SpareLong6  int `sexp:"sparelong6"`
+	SpareLong7  int `sexp:"sparelong7"`
+	SpareLong8  int `sexp:"sparelong8"`
+	SpareLong9  int `sexp:"sparelong9"`
+	SpareLong10 int `sexp:"sparelong10"`
 }
 
 func (p *PlayerType) SetValues() {
