@@ -1,7 +1,6 @@
 package rcss
 
 import (
-	"fmt"
 	"strconv"
 )
 
@@ -74,25 +73,6 @@ func (init *Init) SetValues() {
 	init.UniformNumber = UniformNumber(x)
 	init.PlayMode = PlayMode(init.Init.Array[InitPlayMode])
 
-}
-
-func (m Init) adapter() *buffer {
-	return &buffer{
-		name: "init",
-		vars: []buffer{
-			{title: "side", format: "%c", value: m.Side},
-			{title: "unum", value: m.UniformNumber},
-			{title: "mode", value: m.PlayMode},
-		},
-	}
-}
-
-func (m *Init) UnmarshalRcss(msg Message) error {
-	return m.adapter().UnmarshalRcss(msg)
-}
-
-func (m *Init) MarshalRcss() (Message, error) {
-	return m.adapter().MarshalRcss()
 }
 
 // Aggregate of 109 Server Parameters
@@ -543,355 +523,108 @@ type ServerParameters struct {
 // 	// s.GoalWidth = float32(x)
 // 	fmt.Println(len(s.ServerParameters.Array))
 // }
-func (m ServerParameters) adapter() *buffer {
-	var temp string
-
-	return &buffer{
-		name: "server_param",
-
-		vars: []buffer{
-			{name: "gwidth", value: m.GoalWidth},
-			{name: "inertia_moment", value: m.InertiaMoment},
-			{name: "psize", value: m.PlayerSize},
-			{name: "pdecay", value: m.PlayerDecay},
-			{name: "prand", value: m.PlayerRand},
-			{name: "pweight", value: m.PlayerWeight},
-			{name: "pspeed_max", value: m.MaxPlayerSpeed},
-			{name: "paccel_max", value: m.MaxPlayerAcceleration},
-			{name: "stamina_max", value: m.MaxStamina},
-			{name: "stamina_inc", value: m.MaxStaminaIncrement},
-
-			{name: "recover_init", value: temp},
-			{name: "recover_dthr", value: m.PlayerRecoveryDecrementThreshold},
-			{name: "recover_min", value: temp},
-			{name: "recover_dec", value: m.PlayerRecoveryDecrement},
-			{name: "effort_init", value: temp},
-			{name: "effort_dthr", value: m.EffortDecrementThreshold},
-			{name: "effort_min", value: m.MinEffort},
-			{name: "effort_dec", value: m.EffortDecrement},
-			{name: "effort_ithr", value: m.EffortIncrementThreshold},
-			{name: "effort_inc", value: m.EffortIncrement},
-
-			{name: "kick_rand", value: m.KickRand},
-			{name: "team_actuator_noise", value: m.TeamActuatorNoise},
-			{name: "prand_factor_l", value: m.LeftPlayerRandFactor},
-			{name: "prand_factor_r", value: m.RightPlayerRandFactor},
-			{name: "kick_rand_factor_l", value: m.LeftKickRandFactor},
-			{name: "kick_rand_factor_r", value: m.RightKickRandFactor},
-			{name: "bsize", value: m.BallSize},
-			{name: "bdecay", value: m.BallDecay},
-			{name: "brand", value: m.BallRand},
-			{name: "bweight", value: m.BallWeight},
-
-			{name: "bspeed_max", value: m.MaxBallSpeed},
-			{name: "baccel_max", value: m.MaxBallAcceleration},
-			{name: "dprate", value: m.DashPowerRate},
-			{name: "kprate", value: m.KickPowerRate},
-			{name: "kmargin", value: m.KickableMargin},
-			{name: "ctlradius", value: m.ControlRadius},
-			{name: "ctlradius_width", value: temp},
-			{name: "maxp", value: m.MaxPower},
-			{name: "minp", value: m.MinPower},
-			{name: "maxm", value: m.MaxMoment},
-
-			{name: "minm", value: m.MinMoment},
-			{name: "maxnm", value: m.MaxNeckMoment},
-			{name: "minnm", value: m.MinNeckMoment},
-			{name: "maxn", value: m.MaxNeckAngle},
-			{name: "minn", value: m.MaxNeckAngle},
-			{name: "visangle", value: m.VisibleAngle},
-			{name: "visdist", value: m.VisibleDistance},
-			{name: "windir", value: m.WindDirection},
-			{name: "winforce", value: m.WindForce},
-			{name: "winang", value: temp},
-
-			{name: "winrand", value: m.WindRand},
-			{name: "kickable_area", value: temp},
-			{name: "catch_area_l", value: m.GoalieCatchableAreaLength},
-			{name: "catch_area_w", value: m.GoalieCatchableAreaWidth},
-			{name: "catch_prob", value: m.GoalieCatchProbability},
-			{name: "goalie_max_moves", value: m.MaxGoalieAfterCatchMoves},
-			{name: "ckmargin", value: m.CornerKickMargin},
-			{name: "offside_area", value: m.OffsideActiveAreaSize},
-			{name: "win_no", value: m.NoWind},
-			{name: "win_random", value: m.ProbableWind},
-
-			{name: "say_cnt_max", value: temp},
-			{name: "SayCoachMsgSize", value: temp},
-			{name: "clang_win_size", value: m.CoachLanguageWindowSize},
-			{name: "clang_define_win", value: temp},
-			{name: "clang_meta_win", value: m.CoachLanguageMetaWindow},
-			{name: "clang_advice_win", value: m.CoachLanguageAdviceWindow},
-			{name: "clang_info_win", value: m.CoachLanguageInformationWindow},
-			{name: "clang_mess_delay", value: m.CoachLanguageMessageDelay},
-			{name: "clang_mess_per_cycle", value: m.CoachLanguageMaxMessagesPerCycle},
-			{name: "half_time", value: m.HalfTime},
-
-			{name: "sim_st", value: m.SimulatorStep},
-			{name: "send_st", value: m.SendStep},
-			{name: "recv_st", value: m.ReceiveStep},
-			{name: "sb_step", value: m.SenseBodyStep},
-			{name: "lcm_st", value: temp},
-			{name: "SayMsgSize", value: m.SayMessageSize},
-			{name: "hear_max", value: m.MaxHear},
-			{name: "hear_inc", value: m.HearIncrement},
-			{name: "hear_decay", value: m.HearDecay},
-			{name: "cban_cycle", value: m.CatchBanCycle},
-
-			{name: "slow_down_factor", value: m.SlowDownFactor},
-			{name: "useoffside", value: m.UseOffside},
-			{name: "kickoffoffside", value: temp},
-			{name: "offside_kick_margin", value: m.OffsideKickMargin},
-			{name: "audio_dist", value: m.AudioCutOffDistance},
-			{name: "dist_qstep", value: m.MovableObjectsDistanceQuantizeStep},
-			{name: "land_qstep", value: m.LandmarksDistanceQuantizeStep},
-			{name: "dir_qstep", value: m.DirectionQuantizeStep},
-			{name: "dist_qstep_l", value: m.LeftTeamMovableObjectsDistanceQuantizeStep},
-			{name: "dist_qstep_r", value: m.RightTeamMovableObjectsDistanceQuantizeStep},
-
-			{name: "land_qstep_l", value: m.LeftTeamLandmarksDistanceQuantizeStep},
-			{name: "land_qstep_r", value: m.RightTeamLandmarksDistanceQuantizeStep},
-			{name: "dir_qstep_l", value: m.LeftTeamDirectionQuantizeStep},
-			{name: "dir_qstep_r", value: m.RightTeamDirectionQuantizeStep},
-			{name: "CoachMode", value: m.Coach},
-			{name: "CwRMode", value: m.CoachWithReferee},
-			{name: "old_hear", value: m.OldCoachHear},
-			{name: "sv_start", value: temp},
-			{name: "start_goal_l", value: m.LeftStartGoal},
-			{name: "start_goal_r", value: m.RightStartGoal},
-
-			{name: "fullstate_l", value: m.LeftFullState},
-			{name: "fullstate_r", value: m.RightFullState},
-			{name: "drop_time", value: m.DropBallTime},
-			{name: "", value: temp},
-			{name: "", value: temp},
-			{name: "", value: temp},
-			{name: "", value: temp},
-			{name: "", value: temp},
-			{name: "", value: temp},
-		},
-	}
-}
-
-func (m *ServerParameters) UnmarshalRcss(msg Message) error {
-	return m.adapter().UnmarshalRcss(msg)
-}
-
-func (m *ServerParameters) MarshalRcss() (Message, error) {
-	return m.adapter().MarshalRcss()
-}
 
 type PlayerParameters struct {
 	// PlayerParameters struct {
 	// 	Array []string `sexp:"player_param,siblings"`
 	// }
-	PlayerTypes int `sexp:"player_types"`
+	PlayerTypes float64 `sexp:"player_types"`
 
-	SubsMax int `sexp:"subs_max"`
+	SubsMax float64 `sexp:"subs_max"`
 
-	PtMax int `sexp:"pt_max"`
+	PtMax float64 `sexp:"pt_max"`
 
-	PlayerSpeedMaxDeltaMin   int `sexp:"player_speed_max_delta_min"`
-	PlayerSpeedMaxDeltaMax   int `sexp:"player_speed_max_delta_max"`
-	StaminaIncMaxDeltaFactor int `sexp:"stamina_inc_max_delta_factor"`
+	PlayerSpeedMaxDeltaMin   float64 `sexp:"player_speed_max_delta_min"`
+	PlayerSpeedMaxDeltaMax   float64 `sexp:"player_speed_max_delta_max"`
+	StaminaIncMaxDeltaFactor float64 `sexp:"stamina_inc_max_delta_factor"`
 
-	PlayerDecayDeltaMin      int `sexp:"player_decay_delta_min"`
-	PlayerDecayDeltaMax      int `sexp:"player_decay_delta_max"`
-	InertiaMomentDeltaFactor int `sexp:"inertia_moment_delta_factor"`
+	PlayerDecayDeltaMin      float64 `sexp:"player_decay_delta_min"`
+	PlayerDecayDeltaMax      float64 `sexp:"player_decay_delta_max"`
+	InertiaMomentDeltaFactor float64 `sexp:"inertia_moment_delta_factor"`
 
-	DashPowerRateDeltaMin int `sexp:"dash_power_rate_delta_min"`
-	DashPowerRateDeltaMax int `sexp:"dash_power_rate_delta_max"`
-	PlayerSizeDeltaFactor int `sexp:"player_size_delta_factor"`
+	DashPowerRateDeltaMin float64 `sexp:"dash_power_rate_delta_min"`
+	DashPowerRateDeltaMax float64 `sexp:"dash_power_rate_delta_max"`
+	PlayerSizeDeltaFactor float64 `sexp:"player_size_delta_factor"`
 
-	KickableMarginDeltaMin int `sexp:"kickable_margin_delta_min"`
-	KickableMarginDeltaMax int `sexp:"kickable_margin_delta_max"`
-	KickRandDeltaFactor    int `sexp:"kick_rand_delta_factor"`
+	KickableMarginDeltaMin float64 `sexp:"kickable_margin_delta_min"`
+	KickableMarginDeltaMax float64 `sexp:"kickable_margin_delta_max"`
+	KickRandDeltaFactor    float64 `sexp:"kick_rand_delta_factor"`
 
-	ExtraStaminaDeltaMin int `sexp:"extra_stamina_delta_min"`
-	ExtraStaminaDeltaMax int `sexp:"extra_stamina_delta_max"`
-	EffortMaxDeltaFactor int `sexp:"effort_max_delta_factor"`
-	EffortMinDeltaFactor int `sexp:"effort_min_delta_factor"`
+	ExtraStaminaDeltaMin float64 `sexp:"extra_stamina_delta_min"`
+	ExtraStaminaDeltaMax float64 `sexp:"extra_stamina_delta_max"`
+	EffortMaxDeltaFactor float64 `sexp:"effort_max_delta_factor"`
+	EffortMinDeltaFactor float64 `sexp:"effort_min_delta_factor"`
 
-	SpareLong1  int `sexp:"sparelong1"`
-	SpareLong2  int `sexp:"sparelong2"`
-	SpareLong3  int `sexp:"sparelong3"`
-	SpareLong4  int `sexp:"sparelong4"`
-	SpareLong5  int `sexp:"sparelong5"`
-	SpareLong6  int `sexp:"sparelong6"`
-	SpareLong7  int `sexp:"sparelong7"`
-	SpareLong8  int `sexp:"sparelong8"`
-	SpareLong9  int `sexp:"sparelong9"`
-	SpareLong10 int `sexp:"sparelong10"`
+	SpareLong1  float64 `sexp:"sparelong1"`
+	SpareLong2  float64 `sexp:"sparelong2"`
+	SpareLong3  float64 `sexp:"sparelong3"`
+	SpareLong4  float64 `sexp:"sparelong4"`
+	SpareLong5  float64 `sexp:"sparelong5"`
+	SpareLong6  float64 `sexp:"sparelong6"`
+	SpareLong7  float64 `sexp:"sparelong7"`
+	SpareLong8  float64 `sexp:"sparelong8"`
+	SpareLong9  float64 `sexp:"sparelong9"`
+	SpareLong10 float64 `sexp:"sparelong10"`
 
-	SpareShort1  int `sexp:"spareshort1"`
-	SpareShort2  int `sexp:"spareshort2"`
-	SpareShort3  int `sexp:"spareshort3"`
-	SpareShort4  int `sexp:"spareshort4"`
-	SpareShort5  int `sexp:"spareshort5"`
-	SpareShort6  int `sexp:"spareshort6"`
-	SpareShort7  int `sexp:"spareshort7"`
-	SpareShort8  int `sexp:"spareshort8"`
-	SpareShort9  int `sexp:"spareshort9"`
-	SpareShort10 int `sexp:"spareshort10"`
-}
-
-func (m PlayerParameters) adapter() *buffer {
-	return &buffer{
-		name: "player_param",
-
-		vars: []buffer{
-			{name: "player_types", value: m.PlayerTypes},
-			{name: "subs_max", value: m.SubsMax},
-			{name: "pt_max", value: m.PtMax},
-			{name: "player_speed_max_delta_min", value: m.PlayerSpeedMaxDeltaMin},
-			{name: "player_speed_max_delta_max", value: m.PlayerSpeedMaxDeltaMax},
-			{name: "stamina_inc_max_delta_factor", value: m.StaminaIncMaxDeltaFactor},
-			{name: "player_decay_delta_min", value: m.PlayerDecayDeltaMin},
-			{name: "player_decay_delta_max", value: m.PlayerDecayDeltaMax},
-			{name: "inertia_moment_delta_factor", value: m.InertiaMomentDeltaFactor},
-			{name: "dash_power_rate_delta_min", value: m.DashPowerRateDeltaMin},
-			{name: "dash_power_rate_delta_max", value: m.DashPowerRateDeltaMax},
-			{name: "player_size_delta_factor", value: m.PlayerSizeDeltaFactor},
-			{name: "kickable_margin_delta_min", value: m.KickableMarginDeltaMin},
-			{name: "kickable_margin_delta_max", value: m.KickableMarginDeltaMax},
-			{name: "kick_rand_delta_factor", value: m.KickRandDeltaFactor},
-			{name: "extra_stamina_delta_min", value: m.ExtraStaminaDeltaMin},
-			{name: "extra_stamina_delta_max", value: m.ExtraStaminaDeltaMax},
-			{name: "effort_max_delta_factor", value: m.EffortMaxDeltaFactor},
-			{name: "effort_min_delta_factor", value: m.EffortMinDeltaFactor},
-		},
-	}
-}
-
-func (m *PlayerParameters) UnmarshalRcss(msg Message) error {
-	return m.adapter().UnmarshalRcss(msg)
-}
-
-func (m *PlayerParameters) MarshalRcss() (Message, error) {
-	return m.adapter().MarshalRcss()
+	SpareShort1  float64 `sexp:"spareshort1"`
+	SpareShort2  float64 `sexp:"spareshort2"`
+	SpareShort3  float64 `sexp:"spareshort3"`
+	SpareShort4  float64 `sexp:"spareshort4"`
+	SpareShort5  float64 `sexp:"spareshort5"`
+	SpareShort6  float64 `sexp:"spareshort6"`
+	SpareShort7  float64 `sexp:"spareshort7"`
+	SpareShort8  float64 `sexp:"spareshort8"`
+	SpareShort9  float64 `sexp:"spareshort9"`
+	SpareShort10 float64 `sexp:"spareshort10"`
 }
 
 type PlayerType struct {
 	// Player Identifier
-	Id int `sexp:"id"`
+	Id float64 `sexp:"id"`
 
 	// Maximum Player Speed
-	PlayerSpeedMax int `sexp:"player_speed_max"`
+	PlayerSpeedMax float64 `sexp:"player_speed_max"`
 
 	// Maximum Stamina Increase
-	StaminaIncMax int `sexp:"stamina_inc_max"`
+	StaminaIncMax float64 `sexp:"stamina_inc_max"`
 
 	// Player Decay
-	PlayerDecay int `sexp:"player_decay"`
+	PlayerDecay float64 `sexp:"player_decay"`
 
 	// Inertia Moment
-	InertiaMoment int `sexp:"inertia_moment"`
+	InertiaMoment float64 `sexp:"inertia_moment"`
 
 	// Dash Power Rate
-	DashPowerRate int `sexp:"dash_power_rate"`
+	DashPowerRate float64 `sexp:"dash_power_rate"`
 
 	// Player Size
-	PlayerSize int `sexp:"player_size"`
+	PlayerSize float64 `sexp:"player_size"`
 
 	// Kickable Margin
-	KickableMargin int `sexp:"kickable_margin"`
+	KickableMargin float64 `sexp:"kickable_margin"`
 
 	// Kick Rand
-	KickRand int `sexp:"kick_rand"`
+	KickRand float64 `sexp:"kick_rand"`
 
 	// Extra Stamina
-	ExtraStamina int `sexp:"extra_stamina"`
+	ExtraStamina float64 `sexp:"extra_stamina"`
 
 	// Maximum Effort
-	EffortMax int `sexp:"effort_max"`
+	EffortMax float64 `sexp:"effort_max"`
 
 	// Minimum Effort
-	EffortMin int `sexp:"effort_min"`
+	EffortMin float64 `sexp:"effort_min"`
 
-	SpareLong1  int `sexp:"sparelong1"`
-	SpareLong2  int `sexp:"sparelong2"`
-	SpareLong3  int `sexp:"sparelong3"`
-	SpareLong4  int `sexp:"sparelong4"`
-	SpareLong5  int `sexp:"sparelong5"`
-	SpareLong6  int `sexp:"sparelong6"`
-	SpareLong7  int `sexp:"sparelong7"`
-	SpareLong8  int `sexp:"sparelong8"`
-	SpareLong9  int `sexp:"sparelong9"`
-	SpareLong10 int `sexp:"sparelong10"`
-}
-
-func (p *PlayerType) SetValues() {
-
-}
-func (m *PlayerType) adapter(msg Message) *buffer {
-	if _, err := fmt.Sscan(msg.values[0], &m.Id); err != nil {
-		return &buffer{}
-		fmt.Errorf("error on parsing id: %s", err)
-	}
-
-	if _, err := fmt.Sscan(msg.values[1], &m.PlayerSpeedMax); err != nil {
-		return &buffer{}
-		fmt.Errorf("error on parsing player_speed_max: %s", err)
-	}
-
-	if _, err := fmt.Sscan(msg.values[2], &m.StaminaIncMax); err != nil {
-		return &buffer{}
-		fmt.Errorf("error on parsing stamina_inc_max: %s", err)
-	}
-
-	if _, err := fmt.Sscan(msg.values[3], &m.PlayerDecay); err != nil {
-		return &buffer{}
-		fmt.Errorf("error on parsing player_decay: %s", err)
-	}
-
-	if _, err := fmt.Sscan(msg.values[4], &m.InertiaMoment); err != nil {
-		return &buffer{}
-		fmt.Errorf("error on parsing inertia_moment: %s", err)
-	}
-
-	if _, err := fmt.Sscan(msg.values[5], &m.DashPowerRate); err != nil {
-		return &buffer{}
-		fmt.Errorf("error on parsing dash_power_rate: %s", err)
-	}
-
-	if _, err := fmt.Sscan(msg.values[6], &m.PlayerSize); err != nil {
-		return &buffer{}
-		fmt.Errorf("error on parsing player_size: %s", err)
-	}
-
-	if _, err := fmt.Sscan(msg.values[7], &m.KickableMargin); err != nil {
-		return &buffer{}
-		fmt.Errorf("error on parsing kickable_margin: %s", err)
-	}
-
-	if _, err := fmt.Sscan(msg.values[8], &m.KickRand); err != nil {
-		return &buffer{}
-		fmt.Errorf("error on parsing kick_rand: %s", err)
-	}
-
-	if _, err := fmt.Sscan(msg.values[9], &m.ExtraStamina); err != nil {
-		return &buffer{}
-		fmt.Errorf("error on parsing extra_stamina: %s", err)
-	}
-
-	if _, err := fmt.Sscan(msg.values[10], &m.EffortMax); err != nil {
-		return &buffer{}
-		fmt.Errorf("error on parsing effort_max: %s", err)
-	}
-
-	if _, err := fmt.Sscan(msg.values[11], &m.EffortMin); err != nil {
-		return &buffer{}
-		fmt.Errorf("error on parsing effort_min: %s", err)
-	}
-	return &buffer{}
-}
-
-func (m *PlayerType) UnmarshalRcss(msg Message) error {
-	return m.adapter(msg).UnmarshalRcss(msg)
-}
-
-func (m *PlayerType) MarshalRcss(msg Message) (Message, error) {
-	return m.adapter(msg).MarshalRcss()
+	SpareLong1  float64 `sexp:"sparelong1"`
+	SpareLong2  float64 `sexp:"sparelong2"`
+	SpareLong3  float64 `sexp:"sparelong3"`
+	SpareLong4  float64 `sexp:"sparelong4"`
+	SpareLong5  float64 `sexp:"sparelong5"`
+	SpareLong6  float64 `sexp:"sparelong6"`
+	SpareLong7  float64 `sexp:"sparelong7"`
+	SpareLong8  float64 `sexp:"sparelong8"`
+	SpareLong9  float64 `sexp:"sparelong9"`
+	SpareLong10 float64 `sexp:"sparelong10"`
 }
 
 // Input Driver
