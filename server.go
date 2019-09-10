@@ -54,7 +54,8 @@ func (s server) bind(team Team) {
 			return
 		} else {
 			str = string(l[:])
-			ast, err := sexp.Parse(strings.NewReader(str), nil)
+			//fmt.Println(str)
+			ast, err = sexp.Parse(strings.NewReader(str), nil)
 			if nil != err {
 				fmt.Printf("error on : %s\n", err)
 			}
@@ -72,7 +73,6 @@ func (s server) bind(team Team) {
 
 			switch fmt.Sprint(Sexp[0].Head()) {
 			case "init":
-				fmt.Println(fmt.Sprint(Sexp[0].Head()))
 				var m Init
 				// if err := m.UnmarshalRcss(msg); err != nil {
 				// 	log.Printf("error on unmarshal Init message: %s\n", err)
@@ -87,10 +87,22 @@ func (s server) bind(team Team) {
 				} else {
 					m.SetValues()
 				}
-
 			case "server_param":
-				fmt.Println(fmt.Sprint(Sexp[0].Head()))
+
 				var m ServerParameters
+
+				child := fmt.Sprint(Sexp[0].Tail())
+				child = child[1 : len(child)-1]
+
+				newast, err := sexp.Parse(strings.NewReader(child), nil)
+				if nil != err {
+					fmt.Printf("Error on parsing server_param : %s\n", err)
+				} else {
+					err := newast.Unmarshal(&m)
+					if nil != err {
+						fmt.Printf("Error on unmarshaling server_param : %s\n", err)
+					}
+				}
 				// if err := m.UnmarshalRcss(msg); err != nil {
 				// 	log.Printf("error on unmarshal ServerParameters message: %s\n", err)
 
@@ -98,46 +110,49 @@ func (s server) bind(team Team) {
 				// }
 
 				// go team.ServerParam(m)
-				err := ast.Unmarshal(&m.ServerParameters)
-				if nil != err {
-					panic(err)
-				} else {
-					fmt.Println("vals")
-					m.SetValues()
-				}
+				// err := ast.Unmarshal(&(m.ServerParameters))
+				// if nil != err {
+				// 	fmt.Printf("error : %s\n", err)
+				// } else {
+				// 	fmt.Println("vals")
+				// 	m.SetValues()
+				// }
+
+				//fmt.Println("server_param finish")
 			case "player_param":
-				fmt.Println(fmt.Sprint(Sexp[0].Head()))
-				var m PlayerParameters
-				// if err := m.UnmarshalRcss(msg); err != nil {
-				// 	log.Printf("error on unmarshal PlayerParameters message: %s\n", err)
+				// //fmt.Println(fmt.Sprint(Sexp[0].Head()))
+				// var m PlayerParameters
+				// // if err := m.UnmarshalRcss(msg); err != nil {
+				// // 	log.Printf("error on unmarshal PlayerParameters message: %s\n", err)
 
-				// 	continue
+				// // 	continue
+				// // }
+
+				// // go team.PlayerParam(m)
+				// err := ast.Unmarshal(&m.PlayerParameters)
+				// if nil != err {
+				// 	panic(err)
+				// } else {
+				// 	m.SetValues()
 				// }
-
-				// go team.PlayerParam(m)
-				err := ast.Unmarshal(&m.PlayerParameters)
-				if nil != err {
-					panic(err)
-				} else {
-					m.SetValues()
-				}
-
+				// fmt.Println("player_param finish")
 			case "player_type":
-				fmt.Println(fmt.Sprint(Sexp[0].Head()))
-				var m PlayerType
-				// if err := m.UnmarshalRcss(msg); err != nil {
-				// 	log.Printf("error on unmarshal PlayerType message: %s\n", err)
+				// fmt.Println(fmt.Sprint(Sexp[0].Head()))
+				// var m PlayerType
+				// // if err := m.UnmarshalRcss(msg); err != nil {
+				// // 	log.Printf("error on unmarshal PlayerType message: %s\n", err)
 
-				// 	continue
+				// // 	continue
+				// // }
+
+				// // go team.PlayerType(m)
+				// err := ast.Unmarshal(&m.PlayerType)
+				// if nil != err {
+				// 	panic(err)
+				// } else {
+				// 	m.SetValues()
 				// }
-
-				// go team.PlayerType(m)
-				err := ast.Unmarshal(&m.PlayerType)
-				if nil != err {
-					panic(err)
-				} else {
-					m.SetValues()
-				}
+				// fmt.Println("player_type finish")
 
 			case "see":
 
@@ -150,12 +165,12 @@ func (s server) bind(team Team) {
 			case "error":
 
 			default:
-				//fmt.Printf("unhandled server input: `%s`\n", fmt.Sprint(Sexp[0]))
+				fmt.Printf("unhandled server input: `%s`\n", fmt.Sprint(Sexp[0]))
 			}
 		}
 	}
 	//Should be ommited , I just put it to get rid og "ast declered and not used" error!
-	ast.Unmarshal()
+	//ast.Unmarshal()
 }
 
 func newInitCommand(teamName string, goalie bool, version int) Message {

@@ -57,10 +57,11 @@ func main() {
 	// 	panic(err)
 	// }
 	// fmt.Println(p.init)
-	const example_sexp = `(init l 1 befor_kick_off)`
+	const example_sexp = `(init true) (init1 1.2)`
 
 	var example struct {
-		Array []string `sexp:"init,siblings"`
+		Bool  bool    `sexp:"init"`
+		Float float64 `sexp:"init1"`
 		//Tgt [3]float32 `sexp:"target,siblings"`
 	}
 
