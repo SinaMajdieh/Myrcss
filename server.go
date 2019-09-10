@@ -49,12 +49,12 @@ func (s server) bind(team Team) {
 	var str string
 	var ast *sexp.Node
 	for {
-		if _, _, err := s.conn.ReadFrom(l); err != nil {
+		if n, _, err := s.conn.ReadFrom(l); err != nil {
 			fmt.Printf("error: %s\n", err)
 			return
 		} else {
-			str = string(l[:])
-			//fmt.Println(str)
+
+			str = string(l[:n])
 			ast, err = sexp.Parse(strings.NewReader(str), nil)
 			if nil != err {
 				fmt.Printf("error on : %s\n", err)
@@ -92,7 +92,7 @@ func (s server) bind(team Team) {
 
 				var m ServerParameters
 
-				child := fmt.Sprint(Sexp[0].Tail())
+				child := fmt.Sprint(fmt.Sprint(Sexp[0].Tail()))
 				child = child[1 : len(child)-1]
 
 				newast, err := sexp.Parse(strings.NewReader(child), nil)
@@ -104,6 +104,7 @@ func (s server) bind(team Team) {
 						fmt.Printf("Error on unmarshaling server_param : %s\n", err)
 					}
 				}
+
 				// if err := m.UnmarshalRcss(msg); err != nil {
 				// 	log.Printf("error on unmarshal ServerParameters message: %s\n", err)
 
@@ -122,16 +123,17 @@ func (s server) bind(team Team) {
 			case "player_param":
 				var m PlayerParameters
 
-				child := fmt.Sprint(Sexp[0].Tail())
+				child := fmt.Sprint(fmt.Sprint(Sexp[0].Tail()))
 				child = child[1 : len(child)-1]
 
 				newast, err := sexp.Parse(strings.NewReader(child), nil)
 				if nil != err {
-					fmt.Printf("Error on parsing server_param : %s\n", err)
+					fmt.Printf("Error on parsing player_param : %s\n", err)
 				} else {
 					err := newast.Unmarshal(&m)
 					if nil != err {
-						fmt.Printf("Error on unmarshaling server_param : %s\n", err)
+						fmt.Printf("Error on unmarshaling player_param : %s\n", err)
+
 					}
 				}
 
@@ -146,6 +148,22 @@ func (s server) bind(team Team) {
 				// go team.PlayerParam(m)
 
 			case "player_type":
+				var m PlayerType
+
+				child := fmt.Sprint(fmt.Sprint(Sexp[0].Tail()))
+				child = child[1 : len(child)-1]
+
+				newast, err := sexp.Parse(strings.NewReader(child), nil)
+				if nil != err {
+					fmt.Printf("Error on parsing player_type : %s\n", err)
+				} else {
+					err := newast.Unmarshal(&m)
+					if nil != err {
+						fmt.Printf("Error on unmarshaling player_type : %s\n", err)
+
+					}
+				}
+
 				// fmt.Println(fmt.Sprint(Sexp[0].Head()))
 				// var m PlayerType
 				// // if err := m.UnmarshalRcss(msg); err != nil {
@@ -174,12 +192,12 @@ func (s server) bind(team Team) {
 			case "error":
 
 			default:
-				fmt.Printf("unhandled server input: `%s`\n", fmt.Sprint(Sexp[0]))
+				//fmt.Printf("unhandled server input: `%s`\n", Tail)
 			}
 		}
 	}
 	//Should be ommited , I just put it to get rid og "ast declered and not used" error!
-	ast.Unmarshal()
+	//ast.Unmarshal()
 }
 
 func newInitCommand(teamName string, goalie bool, version int) Message {
