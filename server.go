@@ -74,6 +74,13 @@ func (s server) bind(team Team) {
 			switch fmt.Sprint(Sexp[0].Head()) {
 			case "init":
 				var m Init
+				err := ast.Unmarshal(&m.Init)
+				if nil != err {
+					panic(err)
+				} else {
+					m.SetValues()
+				}
+
 				// if err := m.UnmarshalRcss(msg); err != nil {
 				// 	log.Printf("error on unmarshal Init message: %s\n", err)
 
@@ -81,12 +88,6 @@ func (s server) bind(team Team) {
 				// }
 
 				//go team.Init(s, m.Side, m.UniformNumber, m.PlayMode)
-				err := ast.Unmarshal(&m.Init)
-				if nil != err {
-					panic(err)
-				} else {
-					m.SetValues()
-				}
 			case "server_param":
 
 				var m ServerParameters
@@ -118,24 +119,32 @@ func (s server) bind(team Team) {
 				// 	m.SetValues()
 				// }
 
-				//fmt.Println("server_param finish")
 			case "player_param":
-				// //fmt.Println(fmt.Sprint(Sexp[0].Head()))
-				// var m PlayerParameters
-				// // if err := m.UnmarshalRcss(msg); err != nil {
-				// // 	log.Printf("error on unmarshal PlayerParameters message: %s\n", err)
+				var m PlayerParameters
 
-				// // 	continue
-				// // }
+				child := fmt.Sprint(Sexp[0].Tail())
+				child = child[1 : len(child)-1]
 
-				// // go team.PlayerParam(m)
-				// err := ast.Unmarshal(&m.PlayerParameters)
-				// if nil != err {
-				// 	panic(err)
-				// } else {
-				// 	m.SetValues()
+				newast, err := sexp.Parse(strings.NewReader(child), nil)
+				if nil != err {
+					fmt.Printf("Error on parsing server_param : %s\n", err)
+				} else {
+					err := newast.Unmarshal(&m)
+					if nil != err {
+						fmt.Printf("Error on unmarshaling server_param : %s\n", err)
+					}
+				}
+
+				//fmt.Println(fmt.Sprint(Sexp[0].Head()))
+
+				// if err := m.UnmarshalRcss(msg); err != nil {
+				// 	log.Printf("error on unmarshal PlayerParameters message: %s\n", err)
+
+				// 	continue
 				// }
-				// fmt.Println("player_param finish")
+
+				// go team.PlayerParam(m)
+
 			case "player_type":
 				// fmt.Println(fmt.Sprint(Sexp[0].Head()))
 				// var m PlayerType
@@ -170,7 +179,7 @@ func (s server) bind(team Team) {
 		}
 	}
 	//Should be ommited , I just put it to get rid og "ast declered and not used" error!
-	//ast.Unmarshal()
+	ast.Unmarshal()
 }
 
 func newInitCommand(teamName string, goalie bool, version int) Message {

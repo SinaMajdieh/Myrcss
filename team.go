@@ -682,62 +682,59 @@ func (m *ServerParameters) MarshalRcss() (Message, error) {
 }
 
 type PlayerParameters struct {
-	PlayerParameters struct {
-		Array []string `sexp:"player_param,siblings"`
-	}
-	PlayerTypes int
+	// PlayerParameters struct {
+	// 	Array []string `sexp:"player_param,siblings"`
+	// }
+	PlayerTypes int `sexp:"player_types"`
 
-	SubsMax int
+	SubsMax int `sexp:"subs_max"`
 
-	PtMax int
+	PtMax int `sexp:"pt_max"`
 
-	PlayerSpeedMaxDeltaMin   int
-	PlayerSpeedMaxDeltaMax   int
-	StaminaIncMaxDeltaFactor int
+	PlayerSpeedMaxDeltaMin   int `sexp:"player_speed_max_delta_min"`
+	PlayerSpeedMaxDeltaMax   int `sexp:"player_speed_max_delta_max"`
+	StaminaIncMaxDeltaFactor int `sexp:"stamina_inc_max_delta_factor"`
 
-	PlayerDecayDeltaMin      int
-	PlayerDecayDeltaMax      int
-	InertiaMomentDeltaFactor int
+	PlayerDecayDeltaMin      int `sexp:"player_decay_delta_min"`
+	PlayerDecayDeltaMax      int `sexp:"player_decay_delta_max"`
+	InertiaMomentDeltaFactor int `sexp:"inertia_moment_delta_factor"`
 
-	DashPowerRateDeltaMin int
-	DashPowerRateDeltaMax int
-	PlayerSizeDeltaFactor int
+	DashPowerRateDeltaMin int `sexp:"dash_power_rate_delta_min"`
+	DashPowerRateDeltaMax int `sexp:"dash_power_rate_delta_max"`
+	PlayerSizeDeltaFactor int `sexp:"player_size_delta_factor"`
 
-	KickableMarginDeltaMin int
-	KickableMarginDeltaMax int
-	KickRandDeltaFactor    int
+	KickableMarginDeltaMin int `sexp:"kickable_margin_delta_min"`
+	KickableMarginDeltaMax int `sexp:"kickable_margin_delta_max"`
+	KickRandDeltaFactor    int `sexp:"kick_rand_delta_factor"`
 
-	ExtraStaminaDeltaMin int
-	ExtraStaminaDeltaMax int
-	EffortMaxDeltaFactor int
-	EffortMinDeltaFactor int
+	ExtraStaminaDeltaMin int `sexp:"extra_stamina_delta_min"`
+	ExtraStaminaDeltaMax int `sexp:"extra_stamina_delta_max"`
+	EffortMaxDeltaFactor int `sexp:"effort_max_delta_factor"`
+	EffortMinDeltaFactor int `sexp:"effort_min_delta_factor"`
 
-	SpareLong1  int
-	SpareLong2  int
-	SpareLong3  int
-	SpareLong4  int
-	SpareLong5  int
-	SpareLong6  int
-	SpareLong7  int
-	SpareLong8  int
-	SpareLong9  int
-	SpareLong10 int
+	SpareLong1  int `sexp:"sparelong1"`
+	SpareLong2  int `sexp:"sparelong2"`
+	SpareLong3  int `sexp:"sparelong3"`
+	SpareLong4  int `sexp:"sparelong4"`
+	SpareLong5  int `sexp:"sparelong5"`
+	SpareLong6  int `sexp:"sparelong6"`
+	SpareLong7  int `sexp:"sparelong7"`
+	SpareLong8  int `sexp:"sparelong8"`
+	SpareLong9  int `sexp:"sparelong9"`
+	SpareLong10 int `sexp:"sparelong10"`
 
-	SpareShort1  int
-	SpareShort2  int
-	SpareShort3  int
-	SpareShort4  int
-	SpareShort5  int
-	SpareShort6  int
-	SpareShort7  int
-	SpareShort8  int
-	SpareShort9  int
-	SpareShort10 int
+	SpareShort1  int `sexp:"spareshort1"`
+	SpareShort2  int `sexp:"spareshort2"`
+	SpareShort3  int `sexp:"spareshort3"`
+	SpareShort4  int `sexp:"spareshort4"`
+	SpareShort5  int `sexp:"spareshort5"`
+	SpareShort6  int `sexp:"spareshort6"`
+	SpareShort7  int `sexp:"spareshort7"`
+	SpareShort8  int `sexp:"spareshort8"`
+	SpareShort9  int `sexp:"spareshort9"`
+	SpareShort10 int `sexp:"spareshort10"`
 }
 
-func (p *PlayerParameters) SetValues() {
-
-}
 func (m PlayerParameters) adapter() *buffer {
 	return &buffer{
 		name: "player_param",
