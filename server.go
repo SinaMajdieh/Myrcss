@@ -192,7 +192,7 @@ func (s server) bind(team Team) {
 			case "error":
 
 			default:
-				//fmt.Printf("unhandled server input: `%s`\n", Tail)
+				fmt.Printf("unhandled server input: `%s`\n", str)
 			}
 		}
 	}
@@ -234,27 +234,93 @@ func (s server) Join(team Team) error {
 }
 
 func (s server) Reconnect(team Team, unum UniformNumber) error {
-	return nil
+	msg := Message{name: "reconnect"}
+	msg.AddValues(team.Name(), strconv.Itoa(int(unum)))
+
+	if b, err := msg.MarshalBinary(); err != nil {
+		return err
+	} else if n, err := s.conn.WriteTo(b, s.raddr); err != nil {
+		return err
+	} else if 0 == n {
+		return fmt.Errorf("nothing has been written")
+	} else {
+		return nil
+	}
+
 }
 
 func (s server) Bye() error {
+	msg := Message{name: "bye"}
+	if b, err := msg.MarshalBinary(); err != nil {
+		return err
+	} else if n, err := s.conn.WriteTo(b, s.raddr); err != nil {
+		return err
+	} else if 0 == n {
+		return fmt.Errorf("nothing has been written")
+	} else {
+		return nil
+	}
 	return nil
 }
 
 func (s server) Catch(dir Direction) error {
-	return nil
+	msg := Message{name: "catch"}
+	msg.AddValues(strconv.FormatFloat(float64(dir), 'f', -1, 64))
+
+	if b, err := msg.MarshalBinary(); err != nil {
+		return err
+	} else if n, err := s.conn.WriteTo(b, s.raddr); err != nil {
+		return err
+	} else if 0 == n {
+		return fmt.Errorf("nothing has been written")
+	} else {
+		return nil
+	}
 }
 
 func (s server) ChangeView(w SightWidth, q SightQuality) error {
-	return nil
+	msg := Message{name: "change_view"}
+	msg.AddValues(string(w), string(q))
+
+	if b, err := msg.MarshalBinary(); err != nil {
+		return err
+	} else if n, err := s.conn.WriteTo(b, s.raddr); err != nil {
+		return err
+	} else if 0 == n {
+		return fmt.Errorf("nothing has been written")
+	} else {
+		return nil
+	}
 }
 
-func (s server) Dash() error {
-	return nil
+func (s server) Dash(p Power) error {
+	msg := Message{name: "dash"}
+	msg.AddValues(strconv.Itoa(int(p)))
+
+	if b, err := msg.MarshalBinary(); err != nil {
+		return err
+	} else if n, err := s.conn.WriteTo(b, s.raddr); err != nil {
+		return err
+	} else if 0 == n {
+		return fmt.Errorf("nothing has been written")
+	} else {
+		return nil
+	}
 }
 
-func (s server) Kick() error {
-	return nil
+func (s server) Kick(p Power, d Direction) error {
+	msg := Message{name: "kick"}
+	msg.AddValues(strconv.Itoa(int(p)), strconv.FormatFloat(float64(d), 'f', -1, 64))
+
+	if b, err := msg.MarshalBinary(); err != nil {
+		return err
+	} else if n, err := s.conn.WriteTo(b, s.raddr); err != nil {
+		return err
+	} else if 0 == n {
+		return fmt.Errorf("nothing has been written")
+	} else {
+		return nil
+	}
 }
 
 func (s server) Move(x, y int) error {
@@ -263,20 +329,45 @@ func (s server) Move(x, y int) error {
 	return err
 }
 
-func (s server) Say() error {
-	return nil
+func (s server) Say(msg string) error {
+	_, err := s.conn.WriteTo([]byte(msg), s.raddr)
+
+	return err
 }
 
-func (s server) Turn() error {
-	return nil
+func (s server) Turn(m Moment) error {
+	msg := Message{name: "turn"}
+	msg.AddValues(strconv.Itoa(int(m)))
+
+	if b, err := msg.MarshalBinary(); err != nil {
+		return err
+	} else if n, err := s.conn.WriteTo(b, s.raddr); err != nil {
+		return err
+	} else if 0 == n {
+		return fmt.Errorf("nothing has been written")
+	} else {
+		return nil
+	}
 }
 
-func (s server) TurnNeck() error {
-	return nil
+func (s server) TurnNeck(n NeckMoment) error {
+	msg := Message{name: "turn_neck"}
+	msg.AddValues(strconv.Itoa(int(n)))
+
+	if b, err := msg.MarshalBinary(); err != nil {
+		return err
+	} else if n, err := s.conn.WriteTo(b, s.raddr); err != nil {
+		return err
+	} else if 0 == n {
+		return fmt.Errorf("nothing has been written")
+	} else {
+		return nil
+	}
 }
 
 func (s server) Score() error {
-	return nil
+	_, err := s.conn.WriteTo([]byte("(score)"), s.raddr)
+	return err
 }
 
 func (s server) See() error {
@@ -284,5 +375,6 @@ func (s server) See() error {
 }
 
 func (s server) SenseBody() error {
-	return nil
+	_, err := s.conn.WriteTo([]byte("(sense_body)"), s.raddr)
+	return err
 }
